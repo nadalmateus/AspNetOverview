@@ -4,11 +4,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Blog.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
     public class CategoryController : ControllerBase
     {
-        [HttpGet("")]
+        [HttpGet("v1/categories")]
         public IActionResult Get([FromServices] BlogDataContext context)
         {
             var categories = context.Categories.ToList();
