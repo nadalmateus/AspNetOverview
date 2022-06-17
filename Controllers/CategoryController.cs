@@ -1,5 +1,6 @@
 ﻿using Blog.Data;
 using Blog.Models;
+using Blog.ViewModels;
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -19,7 +20,7 @@ namespace Blog.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "05X10 - Falha inteterna no servidor");
+                return StatusCode(500, "05X05 - Falha inteterna no servidor");
             }
         }
 
@@ -39,19 +40,26 @@ namespace Blog.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "05X10 - Falha inteterna no servidor");
+                return StatusCode(500, "05X04 - Falha inteterna no servidor");
             }
         }
 
         [HttpPost("v1/categories")]
-        public async Task<IActionResult> PostAsync([FromBody] Category categoryFromBody, [FromServices] BlogDataContext context)
+        public async Task<IActionResult> PostAsync([FromBody] CreateCategoryViewModel categoryFromBody, [FromServices] BlogDataContext context)
         {
             try
             {
-                await context.Categories.AddAsync(categoryFromBody);
+                var category = new Category
+                {
+                    Id = 0,
+                    Name = categoryFromBody.Name,
+                    Slug = categoryFromBody.Slug.ToLower(),
+                };
+
+                await context.Categories.AddAsync(category);
                 await context.SaveChangesAsync();
 
-                return Created($"v1/categories/{categoryFromBody.Id}", categoryFromBody);
+                return Created($"v1/categories/{category.Id}", category);
             }
             catch (DbUpdateException ex)
             {
@@ -64,7 +72,7 @@ namespace Blog.Controllers
         }
 
         [HttpPut("v1/categories/{id:int}")]
-        public async Task<IActionResult> PutAsync([FromRoute] int id, [FromBody] Category categoryFromBody, [FromServices] BlogDataContext context)
+        public async Task<IActionResult> PutAsync([FromRoute] int id, [FromBody] CreateCategoryViewModel categoryFromBody, [FromServices] BlogDataContext context)
         {
             try
             {
