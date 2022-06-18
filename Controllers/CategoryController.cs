@@ -1,4 +1,5 @@
 ﻿using Blog.Data;
+using Blog.Extensions;
 using Blog.Models;
 using Blog.ViewModels;
 
@@ -16,11 +17,11 @@ namespace Blog.Controllers
             try
             {
                 var categories = await context.Categories.ToListAsync();
-                return Ok(categories);
+                return Ok(new ResultViewModel<List<Category>>(categories));
             }
-            catch (Exception ex)
+            catch
             {
-                return StatusCode(500, "05X05 - Falha inteterna no servidor");
+                return StatusCode(500, new ResultViewModel<List<Category>>("05X05 - Falha inteterna no servidor"));
             }
         }
 
@@ -33,14 +34,14 @@ namespace Blog.Controllers
 
                 if (category == null)
                 {
-                    return NotFound();
+                    return NotFound(new ResultViewModel<Category>("Conteúdo não encontrado"));
                 }
 
-                return Ok(category);
+                return Ok(new ResultViewModel<Category>(category));
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "05X04 - Falha inteterna no servidor");
+                return StatusCode(500, new ResultViewModel<Category>("05X04 - Falha inteterna no servidor"));
             }
         }
 
@@ -49,7 +50,7 @@ namespace Blog.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest();
+                return BadRequest(new ResultViewModel<Category>(ModelState.GetErrors()));
             }
 
             try
@@ -64,15 +65,15 @@ namespace Blog.Controllers
                 await context.Categories.AddAsync(category);
                 await context.SaveChangesAsync();
 
-                return Created($"v1/categories/{category.Id}", category);
+                return Created($"v1/categories/{category.Id}", new ResultViewModel<Category>(category));
             }
             catch (DbUpdateException ex)
             {
-                return StatusCode(500, "05XE9 - Não foi possivel incluir a categoria no banco");
+                return StatusCode(500, new ResultViewModel<Category>("05XE9 - Não foi possivel incluir a categoria no banco"));
             }
-            catch (Exception ex)
+            catch
             {
-                return StatusCode(500, "05X10 - Falha inteterna no servidor");
+                return StatusCode(500, new ResultViewModel<Category>("05X10 - Falha inteterna no servidor"));
             }
         }
 
@@ -85,7 +86,7 @@ namespace Blog.Controllers
 
                 if (category == null)
                 {
-                    return NotFound();
+                    return NotFound(new ResultViewModel<Category>("Conteúdo não encontrado"));
                 }
 
                 category.Name = categoryFromBody.Name;
@@ -94,15 +95,15 @@ namespace Blog.Controllers
                 context.Categories.Update(category);
                 await context.SaveChangesAsync();
 
-                return Ok(categoryFromBody);
+                return Ok(new ResultViewModel<Category>(category));
             }
             catch (DbUpdateException ex)
             {
-                return StatusCode(500, "05XE8 - Não foi possivel alterar a categoria no banco");
+                return StatusCode(500, new ResultViewModel<Category>("05XE8 - Não foi possivel alterar a categoria no banco"));
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "05X11 - Falha inteterna no servidor");
+                return StatusCode(500, new ResultViewModel<Category>("05X11 - Falha inteterna no servidor"));
             }
         }
 
@@ -115,26 +116,22 @@ namespace Blog.Controllers
 
                 if (category == null)
                 {
-                    return NotFound();
+                    return NotFound(new ResultViewModel<Category>("Conteúdo não encontrado"));
                 }
 
                 context.Categories.Remove(category);
                 await context.SaveChangesAsync();
 
-                return Ok(category);
+                return Ok(new ResultViewModel<Category>(category));
             }
             catch (DbUpdateException ex)
             {
-                return StatusCode(500, "05XE7 - Não foi possivel excluir a categoria no banco");
+                return StatusCode(500, new ResultViewModel<Category>("05XE7 - Não foi possivel excluir a categoria no banco"));
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "05X12 - Falha inteterna no servidor");
+                return StatusCode(500, new ResultViewModel<Category>("05X12 - Falha inteterna no servidor"));
             }
         }
     }
 }
-
-
-
-
