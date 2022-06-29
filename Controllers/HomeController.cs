@@ -9,6 +9,13 @@ public class HomeController : ControllerBase
     [HttpGet]
     public IActionResult Get()
     {
-        return Ok();
+        try
+        {
+            return Ok();
+        }
+        catch
+        {
+            return BadRequest();
+        }
     }
 }
