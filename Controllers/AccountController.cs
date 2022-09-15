@@ -15,4 +15,3 @@ public class AccountController : ControllerBase
         return Ok(token);
     }
 }
-
